@@ -14,3 +14,5 @@ class Box:
 if __name__ == '__main__':
 	box1 = Box(10,20,30) 
 	box1.info()	
+	box2 = Box(20,20,30) 
+	box2.info()	
