@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+
+Name       : Plain & Clean
+   
+Description: A two-column, fixed-width design with dark color scheme.
+Version    : 1.0
+Released   : 20111024
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Plainclean by FCT</title>
+<link href="http://dev.microoh.com/static/html_test/style.css" rel="stylesheet" type="text/css" media="screen" />
+</head>
+<body>
+<div id="wrapper">
+	<div id="header" class="container">
+		<div id="logo">
+			<h1><a href="#">Liu Blog  {{ goValue }} </a></h1>
+			<p>template design by <a href="http://www.freecsstemplates.org/" rel="nofollow">FreeCSSTemplates.org</a></p>
+		</div>
+		<div id="menu">
+			<ul>
+				<li class="current_page_item"><a href="#">Homepage</a></li>
+				<li><a href="#">Blog</a></li>
+				<li><a href="#">Photos</a></li>
+				<li><a href="#">About</a></li>
+				<li><a href="#">Links</a></li>
+				<li><a href="#">Contact</a></li>
+			</ul>
+		</div>
+	</div>
+	<!-- end #header -->
+	<div id="page" class="container">
+		<div id="content">
+
+            {% for a in articles %}
+
+			<div class="post">
+				<h3 class="title"><a href="#">{{ a.title }} </a></h3>
+				<p class="meta"><span class="date">{{ d }}</span><span class="posted">Posted by <a href="#">{{ a.author.name }}</a></span></p>
+				<div style="clear: both;">&nbsp;</div>
+				<div class="entry">
+					<p>{{ a.content }}</p>
+					<p class="links"><a href="#" class="more">Read More</a><a href="#" title="b0x" class="comments">Comments</a></p>
+				</div>
+			</div>
+
+            {% endfor %}
+
+			<div style="clear: both;">&nbsp;</div>
+		</div>
+		<!-- end #content -->
+		<div id="sidebar">
+			<ul>
+				<li>
+					<div id="search" >
+						<form method="GET" action="/go/">
+							<div>
+                                {% csrf_token %}
+								<input type="text" name="search-text" id="search-text" value="" />
+								<input type="submit" id="search-submit" value="GO" />
+
+							</div>
+						</form>
+					</div>
+					<div style="clear: both;">&nbsp;</div>
+				</li>
+				<li>
+					<h2>Aliquam tempus</h2>
+					<p>Mauris hendrerit.</p>
+				</li>
+				<li>
+					<h2>Categories</h2>
+					<ul>
+						<li><a href="#">Aliquam libero</a></li>
+						<li><a href="#">Consectetuer adipiscing elit</a></li>
+						<li><a href="#">Metus aliquam pellentesque</a></li>
+						<li><a href="#">Suspendisse iaculis mauris</a></li>
+						<li><a href="#">Urnanet non molestie semper</a></li>
+						<li><a href="#">Proin gravida orci porttitor</a></li>
+					</ul>
+				</li>
+				<li>
+					<h2>Blogroll</h2>
+					<ul>
+						<li><a href="#">Aliquam libero</a></li>
+						<li><a href="#">Consectetuer adipiscing elit</a></li>
+						<li><a href="#">Metus aliquam pellentesque</a></li>
+						<li><a href="#">Suspendisse iaculis mauris</a></li>
+						<li><a href="#">Urnanet non molestie semper</a></li>
+						<li><a href="#">Proin gravida orci porttitor</a></li>
+					</ul>
+				</li>
+				<li>
+					<h2>Archives</h2>
+					<ul>
+						<li><a href="#">Aliquam libero</a></li>
+						<li><a href="#">Consectetuer adipiscing elit</a></li>
+						<li><a href="#">Metus aliquam pellentesque</a></li>
+						<li><a href="#">Suspendisse iaculis mauris</a></li>
+						<li><a href="#">Urnanet non molestie semper</a></li>
+						<li><a href="#">Proin gravida orci porttitor</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<!-- end #sidebar -->
+		<div style="clear: both;">&nbsp;</div>
+	</div>
+	<!-- end #page -->
+</div>
+<div id="footer-content" class="container">
+	<div id="footer-bg">
+		<div id="column1">
+			<h2>Welcome to my website</h2>
+			<p>In world and space.</p>
+		</div>
+		<div id="column2">
+			<h2>Etiam rhoncus volutpat</h2>
+			<p>Sed lacus. Donec lectus. Nullam pretium nibh ut turpis vitae nisl nec metus consectetPhasellus dapibus semper urna.</p>
+		</div>
+		<div id="column3">
+			<h2>Recommended Links</h2>
+			<ul>
+				<li><a href="#">Consectetuer adipiscing elit</a></li>
+				<li><a href="#">Metus aliquam pellentesque</a></li>
+				<li><a href="#">Suspendisse iaculis mauris</a></li>
+				<li><a href="#">Urnanet non molestie semper</a></li>
+				<li><a href="#">Proin gravida orci porttitor</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div id="footer">
+	<p>Copyright (c) 2011 Sitename.com. All rights reserved. Design by <a href="http://www.freecsstemplates.org/" rel="nofollow">FreeCSSTemplates.org</a>.</p>
+</div>
+<!-- end #footer -->
+</body>
+</html>
