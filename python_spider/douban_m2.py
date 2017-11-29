@@ -1,11 +1,14 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import urllib
+
+import requests
 from HTMLParser import HTMLParser
 
 class MovieParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
         self.movies = []
+        self.in_movies = False
 
     def handle_starttag(self,tag,attrs):
         def _attr(attrlist,attrname):
@@ -20,17 +23,32 @@ class MovieParser(HTMLParser):
             movie['title'] = _attr(attrs,'data-title')
             movie['score'] = _attr(attrs,'data-score')
             movie['director'] = _attr(attrs,'data-director')
-            movie['actor'] = _attr(attrs,'data-actor')
+            movie['actors'] = _attr(attrs,'data-actors')
+            self.movies.append(movie)
+            print('%(title)s|%(score)s|%(director)s|%(actors)s' % movie)
+            self.in_movies = True
+
+        if tag == 'img' and self.in_movies:
+            self.in_movies = False
+            src = _attr(attrs,'src')
+            movies = self.movies[len(self.movies) - 1]
+            movie['poster-url'] = src
+            _download_poster_image(movie)
+
+def _download_poster_image(movie):
+    src = movie['poster-url']
+    r = requests.get(src)
+    fname = src.split('/')[-1]
+    with open(fname,'wb') as f:
+        f.writer(r.content)
+        movie['poster-path'] = fname
 
 def nowplaying_movies(url):
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
-    req = urllib2.Request(url,headers=headers)
-    s = urllib2.urlopen(req)
-    print(s.read())
+    r = requests.get(url,headers = headers)
     parser = MovieParser()  #url解析器，继承HTMLparser
-    parser.feed(s.read)  #相当于把读取的数据喂进去
-    s.close()
-    return parser.movies;
+    parser.feed(r.content)  #相当于把读取的数据喂进去
+    return parser.movies
 
 if __name__ == '__main__':
     url = 'https://movie.douban.com/'
