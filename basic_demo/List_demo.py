@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-####### python basic grammers
+# ####### python basic grammers
 names = ['mike','gretchen','sarah','jane']
 print('hello,' + names[1].title() + ',can you eat supper with me?')
 names[0] = 'SEVEN'
@@ -42,6 +42,7 @@ else:
 
 
 ####### 字典与列表的嵌套
+# 创建三个朋友字典，把它们放在一个列表中
 friend_1 = {
     'first_name': 'male',
     'last_name': 'aiya',
@@ -64,18 +65,61 @@ friends = [friend_1,friend_2,friend_3]
 for friend in friends:
     print(friend)
 
+# 字典中嵌套字典，字典的值为一个字典
 cities = {
     'beijing':{'country': 'china','population': 70,'fact': 'every one loves hot pot'},
     'paris': {'country': 'french', 'population': 50, 'fact': 'every one loves cake'},
     'new york': {'country': 'america', 'population': 50, 'fact': 'every one loves hamburger'},
 }
-# 依次将每个键存储在city中（以上三个键），city_info包含城市信息字典，含有三个键
+# 依次将每个键存储在city中（以上三个键），city_info包含城市信息字典，含有三个键。cities.items()有两个参数
 for city,city_info in cities.items():
     print('\ncity: ' + city.title())
     print('In ' + city_info['country'].title() + ', '+ city_info['fact'])
 
 
-####### while loop
+####### 用户输入和while loop
+# input()是一个函数，接受一个参数，即要向用户显示的提示或说明,而且将用户输入解读为字符串,输18为字符串，int()
+greeting = 'hello, '
+greeting +='what is your name?'
+name = input(greeting)
+print('\nhello, ' + name)
+
+# while loop
+# 电影院按年龄收票价不同
+prompt = 'please enter your age: '
+prompt += '\n(enter "quit" when you are finished.)'
+
+active = True
+while active:
+    message = input(prompt)
+    if message == 'quit':
+        active = False
+    elif int(message) <= 3:
+        print('free')
+    elif int(message) > 12:
+        print('you must pay 15 dollars')
+    else:
+        print('you must pay 10 dollars')
+
+# 使用用户输入来填充字典
+responses = {}
+# 设置一个标志 ，提出调查是否继续，true时继续运行
+polling_active = True
+while polling_active:
+    # 提示输入被调查者的名字和回答
+    name = input('\nwhat is your name?')
+    response = input('\nwhich friut do you like best?')
+    # 将答案存储在字典中
+    responses[name] = response
+    # 看看是否还有人要参与调查
+    repeat = input('would you like to let another one respond?(yes/no)')
+    if repeat == 'no':
+        polling_active = False
+# 显示结果
+print('\npoll results')
+for name,response in responses.items():
+    print(name + ' likes to eat ' + response + '.')
+
 
 
 
