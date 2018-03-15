@@ -29,7 +29,7 @@ def run_game():
 	while True:
 		gf.check_events(ai_settings, screen, ship, bullets)# 响应事件
 		ship.update()# 更新飞船
-		gf.update_bullets(bullets)# 更新子弹
+		gf.update_bullets(aliens, bullets)# 更新子弹
 		gf.update_aliens(ai_settings, aliens) # 更新外星人
 		gf.update_screen(ai_settings, screen, ship, aliens, bullets)# 更新屏幕
 
