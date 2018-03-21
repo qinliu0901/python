@@ -72,7 +72,7 @@ def check_play_button(ai_settings, screen, stats, play_button, ship, aliens,
 		create_fleet(ai_settings, screen, ship, aliens)
 		ship.center_ship()
 
-def update_screen(ai_settings, screen, stats, ship, aliens, bullets,
+def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets,
 		play_button):
 	"""更新屏幕上的图像并切换到新屏幕"""
 	# 每次循环时都重绘屏幕
@@ -82,13 +82,16 @@ def update_screen(ai_settings, screen, stats, ship, aliens, bullets,
 		bullet.draw_bullet()
 	ship.blitme()
 	aliens.draw(screen)
+	# 显示得分
+	sb.show_score()
 	# 如果游戏处于非活动状态，就绘制play按钮
 	if not stats.game_active:
 		play_button.draw_button()
 
 	# 让最近绘制的屏幕可见
 	pygame.display.flip()
-def update_bullets(ai_settings, screen, ship, aliens, bullets):
+
+def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
 	"""更新子弹位置删除消失子弹"""
 	bullets.update()
 	# 删除消失的子弹
@@ -96,11 +99,20 @@ def update_bullets(ai_settings, screen, ship, aliens, bullets):
 		if bullet.rect.bottom <=0:
 			bullets.remove(bullet)
 
-	check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets)
+	check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, 
+		aliens, bullets)
 
-def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
+def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, 
+		aliens, bullets):
 	# 检查是否有子弹击中了外星人，删除相应子弹外星人,两个true表示删除,两个组之间的
 	collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+	# 当有外星人击落时，加分，更新得分
+	# 每个值都是一个列表，包含被同一颗子弹击中的所有外星人
+	if collisions:
+		for aliens in collisions.values():
+			stats.score += ai_settings.alien_points * len(aliens)
+			sb.prep_score()
+		check_hign_score(stats, sb)
 
 	if len(aliens) == 0:
 		# 删除现有子弹,加快游戏节奏，并新建一群外星人
@@ -191,4 +203,8 @@ def update_aliens(ai_settings, stats, screen, ship, aliens,bullets):
 	# 检查是否有外星人到达屏幕底端
 	check_aliens_bottom(ai_settings, stats, screen, ship, aliens,bullets)
 
-
+def check_hign_score(stats, sb):
+	"""检查是否诞生了新最高分"""
+	if stats.score > stats.hign_score:
+		stats.hign_score = stats.score
+		sb.prep_hign_score()
