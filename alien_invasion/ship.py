@@ -3,11 +3,13 @@
 # Created by Gretchen Liu
 
 import pygame
+from pygame.sprite import Sprite
 
-class Ship():
-	"""一个飞船类"""
+class Ship(Sprite):
+	"""一个飞船类,方便创建飞船编组"""
 	def __init__(self, ai_settings, screen):
 		"""初始化飞船设置初始位置"""
+		super().__init__()
 		self.screen = screen # 加self的可以供类中所有方法使用
 		self.ai_settings = ai_settings
 
