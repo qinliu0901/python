@@ -1,5 +1,7 @@
 import json
 from pygal_maps_world.maps import World
+from pygal.style import RotateStyle
+from pygal.style import LightColorizedStyle
 from country_codes import get_country_code
 
 filename = 'population_data.json'
@@ -23,14 +25,15 @@ for pop_dict in pop_data:
 # 根据人口数量将所有国家分成三组
 cc_pops_1, cc_pops_2, cc_pops_3 = {}, {}, {}
 for cc, pop in cc_populations.items():
-	if pop < 10000000:
-		cc_pops_1[cc] = pop
-	elif pop < 1000000000:
-		cc_pops_2[cc] = pop
-	else:
-		cc_pops_3[cc] = pop
+    if pop < 10000000:
+        cc_pops_1[cc] = pop
+    elif pop < 1000000000:
+        cc_pops_2[cc] = pop
+    else:
+        cc_pops_3[cc] = pop
 
-wm = World()
+wm_style = RotateStyle('#336699', base_style=LightColorizedStyle)
+wm = World(style=wm_style) # 利用pygal的样式调整样式
 wm.title = "World population in 2010, by Country"
 
 wm.add('0-10m', cc_pops_1)
