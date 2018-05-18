@@ -12,7 +12,7 @@ print("total repositories:", response_dict['total_count'])
 
 # 探索有关仓库的信息，与items关联的是一个列表，其中包含很多字典
 repo_dicts = response_dict['items']
-# print("Repositories returned: ", len(repo_dicts))
+print("Repositories returned: ", len(repo_dicts))
 # #遍历最受欢迎的仓库
 # print("\nselected information about each repository: ")
 # for repo_dict in repo_dicts:
@@ -28,10 +28,15 @@ repo_dicts = response_dict['items']
 # for key in sorted(repo_dict.keys()):
 # 	print(key)
 
-names, stars = [], []
+names, plot_dicts = [], []
 for repo_dict in repo_dicts:
     names.append(repo_dict['name'])
-    stars.append(repo_dict['stargazers_count'])
+    plot_dict = {
+        'value': repo_dict['stargazers_count'],
+        'label': str(repo_dict['description']),  # 有些描述为空
+   		'xlink': repo_dict['html_url'],
+    }
+    plot_dicts.append(plot_dict)
 
 # 可视化
 my_style = LS('#333366', base_style=LCS)
@@ -49,5 +54,5 @@ chart = pygal.Bar(my_config, style=my_style)
 chart.title = 'most starred python projects on github'
 chart.x_labels = names
 
-chart.add('', stars)
+chart.add('', plot_dicts)
 chart.render_to_file('python_repos.svg')
