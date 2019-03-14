@@ -396,7 +396,7 @@ check_missing(train)
 
 ```python
 # 填充缺失值，hukou_loc、family_income以均值填充
-train['hukou_loc'] = train['hukou_loc'] .fillna('null')
+train['hukou_loc'] = train['hukou_loc'] .fillna(4)
 train['family_income'] = train['family_income'] .fillna(train['family_income'].mean())
 ```
 
@@ -408,72 +408,20 @@ train['survey_time'] = train['survey_time'].dt.year  # 调查时间datetime转�
 train['age'] = train['survey_time'] - train['birth']
 test['survey_time'] = test['survey_time'].dt.year  
 test['age'] = test['survey_time'] - test['birth']
-print(train['age'])
+train['age'].head()
 ```
 
-    0       56
-    1       23
-    2       48
-    3       72
-    4       21
-    5       69
-    6       52
-    7       56
-    8       63
-    9       30
-    10      27
-    11      47
-    12      51
-    13      76
-    14      80
-    15      32
-    16      41
-    17      53
-    18      39
-    19      50
-    20      64
-    21      67
-    22      35
-    23      73
-    24      59
-    25      45
-    26      49
-    27      52
-    28      23
-    29      68
-            ..
-    7970    57
-    7971    20
-    7972    38
-    7973    39
-    7974    50
-    7975    43
-    7976    62
-    7977    67
-    7978    39
-    7979    31
-    7980    61
-    7981    69
-    7982    46
-    7983    62
-    7984    80
-    7985    45
-    7986    40
-    7987    52
-    7988    54
-    7989    84
-    7990    25
-    7991    43
-    7992    49
-    7993    61
-    7994    40
-    7995    34
-    7996    70
-    7997    48
-    7998    37
-    7999    24
-    Name: age, Length: 8000, dtype: int64
-    
+
+
+
+    0    56
+    1    23
+    2    48
+    3    72
+    4    21
+    Name: age, dtype: int64
+
+
 
 ## 2. 描述性分析
 
@@ -722,7 +670,7 @@ train.describe()
     </tr>
   </tbody>
 </table>
-<p>8 rows × 137 columns</p>
+<p>8 rows × 138 columns</p>
 </div>
 
 
@@ -758,13 +706,15 @@ train['happiness'].corr(train['family_income'], method='pearson')
 
 ```python
 # 5个等级幸福感的柱状图，5个等级的占比图
-f,ax=plt.subplots(1,2,figsize=(18,8))
-train['happiness'].value_counts().plot.pie(autopct='%1.1f%%',ax=ax[0],shadow=True)
+f,ax=plt.subplots(1,2,figsize=(14,6))
+# 部分分离开
+explode = (0.05,0.05,0,0,0)
+train['happiness'].value_counts().plot.pie(autopct='%1.1f%%',ax=ax[0],shadow=True,explode=explode)
 ax[0].set_xlabel('happiness_level')
 # 用seaborn的计数图
 sns.countplot('happiness',data=train,ax=ax[1])
 # ax[1] = train['happiness'].value_counts().plot.bar()
-ax[1].set_title('How much people are happy')
+ax[1].set_title('How much people are happy',fontsize=15)
 ax[1].set_xlabel('happiness_level')
 ax[1].set_ylabel('number')
 plt.show() 
@@ -800,14 +750,16 @@ train.groupby(['gender', 'happiness'])['happiness'].count()
 
 
 ```python
+# 男女的幸福指数比较
 # hue为色彩色度的意思，可以理解为hue决定具有多彩的标签
 sns.countplot(x='gender', hue='happiness', data=train)
+plt.title('The number of people with different happiness level by sex',fontsize=15)
 ```
 
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x11d04f60>
+    <matplotlib.text.Text at 0x1297f278>
 
 
 
@@ -817,17 +769,15 @@ sns.countplot(x='gender', hue='happiness', data=train)
 
 
 ```python
-## 分年龄分析
-# 绘制直方图，得到每个年龄段的频数
-# bins: 直方图的柱数，可选项，默认为10
-f,ax = plt.subplots(1,1)
-train['age'].plot.hist(ax=ax, color='blue', alpha=0.6)
+# 样本类型的幸福指数比较，1表示城市，2表示农村
+sns.countplot(x='survey_type', hue='happiness', data=train)
+plt.title('The number of people with different happiness level by sample type',fontsize=15)
 ```
 
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x1241a390>
+    <matplotlib.text.Text at 0x126e2518>
 
 
 
@@ -849,6 +799,7 @@ for dataset in combine:
     dataset.loc[(dataset['age'] > 64) & (dataset['age'] <= 80), 'age'] = 4
     dataset.loc[ dataset['age'] > 80, 'age'] = 5 
 sns.countplot('age',hue='happiness',data=train)
+plt.title('The number of people with different happiness level in 5 age',fontsize=15)
 train['age'] = train['age'].astype(int)
 ```
 
@@ -858,38 +809,350 @@ train['age'] = train['age'].astype(int)
 
 
 ```python
-# 绘制热图，热图的用途
-# data.corr()-->correlation matrix
-sns.heatmap(train[['happiness','age','inc_ability','gender','status_peer','family_status','health','equity','class','work_exper',
-                   'health_problem','family_m','house','depression','learn','relax','edu']].corr(),annot=True,cmap='RdYlGn',linewidths=0.2) 
-fig=plt.gcf()
-fig.set_size_inches(10,8)
-plt.show()
-# cut_age.loc[cut_age['age'] <= 18,'age']='Juvenile'
-# cut_age.loc[(cut_age['age'] > 18) & (cut_age['age'] <= 35), 'age'] = 'Youth'
-# cut_age.loc[(cut_age['age'] > 35) & (cut_age['age'] <= 50), 'age'] = 'Middle_aged'
-# cut_age.loc[(cut_age['age'] > 50) & (cut_age['age'] <= 65), 'age'] = 'Old_aged'
-# cut_age.loc[(cut_age['age'] > 65), 'Age'] = 'elder_aged'
-# sns.countplot('age', hue='happiness', data=cut_age)
+## 分年龄分析
+# 绘制条形图，得到每个年龄段的频数
+plt.hist(train['age'], range=(1,6), histtype='bar', align='left', color='blue',alpha=0.5)
+plt.title('The number of people in 5 age',fontsize=15)
+plt.xlabel('age: 1->16-32,2->32-48,3->48-64,3->64-80,5->80-.')
+plt.ylabel('The number of people')
 ```
 
 
-![png](output_20_0.png)
+
+
+    <matplotlib.text.Text at 0x12363358>
+
+
+
+
+![png](output_20_1.png)
 
 
 
 ```python
-f,ax = plt.subplots(1,1,figsize=(18,6))
-sns.countplot('age',hue='work_exper', data=train)
+# 在各个年龄段中，5个happiness level所占比例pie图
+fig,ax1 = plt.subplots(1,5,figsize=(20,4))
+# 部分分离开
+explode = (0.05,0.03,0,0,0)
+train['happiness'][train['age']==1].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[0], explode=explode)
+train['happiness'][train['age']==2].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[1], explode=explode)
+train['happiness'][train['age']==3].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[2], explode=explode)
+train['happiness'][train['age']==4].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[3], explode=explode)
+train['happiness'][train['age']==5].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[4], explode=explode)
+fig.suptitle('The proportion of happiness level in differenr age', fontsize=18, verticalalignment='center')
 ```
 
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x1203fb00>
+    <matplotlib.text.Text at 0x122d3588>
 
 
 
 
 ![png](output_21_1.png)
 
+
+
+```python
+# 每个年龄段的具有不同工作经历的人数
+f,ax = plt.subplots(1,1,figsize=(10,6))
+sns.countplot('age',hue='work_exper', data=train)
+plt.title('The number of people with different work experence by age',fontsize=15)
+```
+
+
+
+
+    <matplotlib.text.Text at 0x12363400>
+
+
+
+
+![png](output_22_1.png)
+
+
+
+```python
+# 绘制热图，热图的用途: seaborn中的heatmap热力图可以得到数据表里多个特征两两的相关度（pearson相关系数计算的）
+# data.corr()：得到关联矩阵，cmap: 从数字到色彩空间的映射，取值是matplotlib包里的colormap名称或颜色对象，
+# annot(annotate的缩写): 默认取值False；如果是True，在热力图每个方格写入数据
+# linewidths:定义热力图里“表示两两特征关系的矩阵小块”之间的间隔大小
+#外界层面（物质）：age，inc_ability，gender，status_peer，family_status，equity，class，income，house，survey_type，
+#个人层面（精神）：health，work_exper，health_problem，depression，learn，relax，edu，social_friend,marital,work_status
+sns.heatmap(train[['happiness','age','inc_ability','gender','status_peer','family_status','health','equity','class','work_exper',
+                   'health_problem','income','house','depression','learn','relax','edu','social_friend','marital','work_status']].corr(),
+            annot=True,cmap='RdYlGn',linewidths=0.2) 
+fig=plt.gcf() # 获取当前的figure
+fig.set_size_inches(12,10) # 设置尺寸
+plt.title('The correlation between features by heatmap',fontsize=18)
+plt.show()
+```
+
+
+![png](output_23_0.png)
+
+
+
+```python
+train.head()
+```
+
+
+
+
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>happiness</th>
+      <th>survey_type</th>
+      <th>province</th>
+      <th>city</th>
+      <th>county</th>
+      <th>survey_time</th>
+      <th>gender</th>
+      <th>birth</th>
+      <th>nationality</th>
+      <th>...</th>
+      <th>public_service_1</th>
+      <th>public_service_2</th>
+      <th>public_service_3</th>
+      <th>public_service_4</th>
+      <th>public_service_5</th>
+      <th>public_service_6</th>
+      <th>public_service_7</th>
+      <th>public_service_8</th>
+      <th>public_service_9</th>
+      <th>age</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>4</td>
+      <td>1</td>
+      <td>12</td>
+      <td>32</td>
+      <td>59</td>
+      <td>2015</td>
+      <td>1</td>
+      <td>1959</td>
+      <td>1</td>
+      <td>...</td>
+      <td>50</td>
+      <td>60</td>
+      <td>50</td>
+      <td>50</td>
+      <td>30.0</td>
+      <td>30</td>
+      <td>50</td>
+      <td>50</td>
+      <td>50</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>4</td>
+      <td>2</td>
+      <td>18</td>
+      <td>52</td>
+      <td>85</td>
+      <td>2015</td>
+      <td>1</td>
+      <td>1992</td>
+      <td>1</td>
+      <td>...</td>
+      <td>90</td>
+      <td>70</td>
+      <td>70</td>
+      <td>80</td>
+      <td>85.0</td>
+      <td>70</td>
+      <td>90</td>
+      <td>60</td>
+      <td>60</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>4</td>
+      <td>2</td>
+      <td>29</td>
+      <td>83</td>
+      <td>126</td>
+      <td>2015</td>
+      <td>2</td>
+      <td>1967</td>
+      <td>1</td>
+      <td>...</td>
+      <td>90</td>
+      <td>80</td>
+      <td>75</td>
+      <td>79</td>
+      <td>80.0</td>
+      <td>90</td>
+      <td>90</td>
+      <td>90</td>
+      <td>75</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>5</td>
+      <td>2</td>
+      <td>10</td>
+      <td>28</td>
+      <td>51</td>
+      <td>2015</td>
+      <td>2</td>
+      <td>1943</td>
+      <td>1</td>
+      <td>...</td>
+      <td>100</td>
+      <td>90</td>
+      <td>70</td>
+      <td>80</td>
+      <td>80.0</td>
+      <td>90</td>
+      <td>90</td>
+      <td>80</td>
+      <td>80</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>4</td>
+      <td>1</td>
+      <td>7</td>
+      <td>18</td>
+      <td>36</td>
+      <td>2015</td>
+      <td>2</td>
+      <td>1994</td>
+      <td>1</td>
+      <td>...</td>
+      <td>50</td>
+      <td>50</td>
+      <td>50</td>
+      <td>50</td>
+      <td>50.0</td>
+      <td>50</td>
+      <td>50</td>
+      <td>50</td>
+      <td>50</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 141 columns</p>
+</div>
+
+
+
+
+```python
+train.select_dtypes(include=['object']).head()
+```
+
+
+
+
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>edu_other</th>
+      <th>property_other</th>
+      <th>invest_other</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+dellist = ['edu_other','property_other','invest_other']
+for i in dellist:
+    del train[i]
+    del test[i]
+```
+
+
+```python
+train.to_csv('happiness_train_clean.csv',index=0)
+test.to_csv('happiness_test_clean.csv',index=0)
+```
+
+
+```python
+# train.dtypes
+```
