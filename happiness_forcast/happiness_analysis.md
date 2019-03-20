@@ -8,6 +8,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+plt.rcParams['font.sans-serif'] = ['KaiTi']
+plt.rcParams['font.serif'] = ['KaiTi']
 ```
 
 ## 1. 数据处理及清洗
@@ -754,12 +756,19 @@ train.groupby(['gender', 'happiness'])['happiness'].count()
 # hue为色彩色度的意思，可以理解为hue决定具有多彩的标签
 sns.countplot(x='gender', hue='happiness', data=train)
 plt.title('The number of people with different happiness level by sex',fontsize=15)
+# 在男性女性中，5个happiness level所占比例pie图
+fig,ax1 = plt.subplots(1,2,figsize=(10,5))
+# 部分分离开
+explode = (0.05,0.03,0,0,0)
+train['happiness'][train['gender']==1].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[0], explode=explode,title='male')
+train['happiness'][train['gender']==2].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[1], explode=explode,title='female')
+fig.suptitle('The proportion of happiness level in differenr gender', fontsize=18, verticalalignment='center')
 ```
 
 
 
 
-    <matplotlib.text.Text at 0x1297f278>
+    <matplotlib.text.Text at 0x13dd1710>
 
 
 
@@ -768,16 +777,25 @@ plt.title('The number of people with different happiness level by sex',fontsize=
 
 
 
+![png](output_17_2.png)
+
+
+
 ```python
 # 样本类型的幸福指数比较，1表示城市，2表示农村
-sns.countplot(x='survey_type', hue='happiness', data=train)
-plt.title('The number of people with different happiness level by sample type',fontsize=15)
+f,ax=plt.subplots(1,3,figsize=(18,6))
+sns.countplot(x='survey_type', hue='happiness', data=train, ax=ax[0])
+# 在样本类型中，5个happiness level所占比例pie图
+explode = (0.05,0.03,0,0,0)
+train['happiness'][train['survey_type']==1].value_counts().plot.pie(autopct='%1.1f%%', ax=ax[1], explode=explode,title='city')
+train['happiness'][train['survey_type']==2].value_counts().plot.pie(autopct='%1.1f%%', ax=ax[2], explode=explode,title='country')
+f.suptitle('The number of people with different happiness level by sample type', fontsize=18, verticalalignment='center')
 ```
 
 
 
 
-    <matplotlib.text.Text at 0x126e2518>
+    <matplotlib.text.Text at 0x14086c18>
 
 
 
@@ -792,13 +810,12 @@ plt.title('The number of people with different happiness level by sample type',f
 # train.dtypes
 combine=[train,test]
 for dataset in combine:
-    dataset.loc[dataset['age']<=16,'age']=0
     dataset.loc[(dataset['age'] > 16) & (dataset['age'] <= 32), 'age'] = 1
     dataset.loc[(dataset['age'] > 32) & (dataset['age'] <= 48), 'age'] = 2
     dataset.loc[(dataset['age'] > 48) & (dataset['age'] <= 64), 'age'] = 3
     dataset.loc[(dataset['age'] > 64) & (dataset['age'] <= 80), 'age'] = 4
     dataset.loc[ dataset['age'] > 80, 'age'] = 5 
-sns.countplot('age',hue='happiness',data=train)
+sns.countplot('age',hue='happiness',data=train,palette='Set1')
 plt.title('The number of people with different happiness level in 5 age',fontsize=15)
 train['age'] = train['age'].astype(int)
 ```
@@ -813,14 +830,14 @@ train['age'] = train['age'].astype(int)
 # 绘制条形图，得到每个年龄段的频数
 plt.hist(train['age'], range=(1,6), histtype='bar', align='left', color='blue',alpha=0.5)
 plt.title('The number of people in 5 age',fontsize=15)
-plt.xlabel('age: 1->16-32,2->32-48,3->48-64,3->64-80,5->80-.')
+plt.xlabel('age: 1->16-32,2->32-48,3->48-64,4->64-80,5->80-.')
 plt.ylabel('The number of people')
 ```
 
 
 
 
-    <matplotlib.text.Text at 0x12363358>
+    <matplotlib.text.Text at 0x13c3b470>
 
 
 
@@ -834,23 +851,93 @@ plt.ylabel('The number of people')
 fig,ax1 = plt.subplots(1,5,figsize=(20,4))
 # 部分分离开
 explode = (0.05,0.03,0,0,0)
-train['happiness'][train['age']==1].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[0], explode=explode)
-train['happiness'][train['age']==2].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[1], explode=explode)
-train['happiness'][train['age']==3].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[2], explode=explode)
-train['happiness'][train['age']==4].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[3], explode=explode)
-train['happiness'][train['age']==5].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[4], explode=explode)
+train['happiness'][train['age']==1].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[0], explode=explode,title='16-32')
+train['happiness'][train['age']==2].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[1], explode=explode,title='32-48')
+train['happiness'][train['age']==3].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[2], explode=explode,title='48-64')
+train['happiness'][train['age']==4].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[3], explode=explode,title='64-80')
+train['happiness'][train['age']==5].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[4], explode=explode,title='80- ')
 fig.suptitle('The proportion of happiness level in differenr age', fontsize=18, verticalalignment='center')
 ```
 
 
 
 
-    <matplotlib.text.Text at 0x122d3588>
+    <matplotlib.text.Text at 0x13dd17f0>
 
 
 
 
 ![png](output_21_1.png)
+
+
+
+```python
+# 在收入合理四个阶段中，5个happiness level所占比例pie图
+fig,ax1 = plt.subplots(1,4,figsize=(16,4))
+explode = (0.05,0.03,0,0,0)
+train['happiness'][train['inc_ability']==1].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[0], explode=explode,title='非常合理')
+train['happiness'][train['inc_ability']==2].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[1], explode=explode,title='合理')
+train['happiness'][train['inc_ability']==3].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[2], explode=explode,title='不合理')
+train['happiness'][train['inc_ability']==4].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[3], explode=explode,title='非常不合理')
+fig.suptitle('The proportion of happiness level in differenr inc_ability', fontsize=18, verticalalignment='center')
+```
+
+
+
+
+    <matplotlib.text.Text at 0x14522278>
+
+
+
+
+![png](output_22_1.png)
+
+
+
+```python
+# 与同龄人比较社会经济地位，5个happiness level的堆叠条形图
+index = np.arange(1,6)
+x1 = train[train['status_peer']==1]['happiness'].groupby(train['happiness']).count()
+x2 = train[train['status_peer']==2]['happiness'].groupby(train['happiness']).count()
+x3 = train[train['status_peer']==3]['happiness'].groupby(train['happiness']).count()
+width = 0.3
+# bottom=x，表示从x的值开始堆叠上去
+plt.bar(left=index, height=x1, width=width, color='b', label='较高')
+plt.bar(left=index, height=x2, width=width, color='r', bottom=x1, label='差不多') 
+plt.bar(left=index, height=x2, width=width, color='y', bottom=x2, label='较低') 
+plt.xlabel('happiness')
+plt.ylabel('number')
+plt.title('The stack barplot of number in different happiness level with status_peer')
+plt.legend(loc='best')
+plt.show()
+```
+
+
+![png](output_23_0.png)
+
+
+
+```python
+# 在社会公平5个阶段中，5个happiness level所占比例pie图
+fig,ax1 = plt.subplots(1,5,figsize=(20,4))
+explode = (0.05,0.03,0,0,0)
+train['happiness'][train['equity']==1].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[0], explode=explode,title='完全不公平')
+train['happiness'][train['equity']==2].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[1], explode=explode,title='比较不公平')
+train['happiness'][train['equity']==3].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[2], explode=explode,title='说不上公平不公平')
+train['happiness'][train['equity']==4].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[3], explode=explode,title='比较公平')
+train['happiness'][train['equity']==5].value_counts().plot.pie(autopct='%1.1f%%', ax=ax1[4], explode=explode,title='完全公平')
+fig.suptitle('The proportion of happiness level in differenr equity', fontsize=18, verticalalignment='center')
+```
+
+
+
+
+    <matplotlib.text.Text at 0x145e7978>
+
+
+
+
+![png](output_24_1.png)
 
 
 
@@ -864,12 +951,12 @@ plt.title('The number of people with different work experence by age',fontsize=1
 
 
 
-    <matplotlib.text.Text at 0x12363400>
+    <matplotlib.text.Text at 0x148e3630>
 
 
 
 
-![png](output_22_1.png)
+![png](output_25_1.png)
 
 
 
@@ -880,8 +967,8 @@ plt.title('The number of people with different work experence by age',fontsize=1
 # linewidths:定义热力图里“表示两两特征关系的矩阵小块”之间的间隔大小
 #外界层面（物质）：age，inc_ability，gender，status_peer，family_status，equity，class，income，house，survey_type，
 #个人层面（精神）：health，work_exper，health_problem，depression，learn，relax，edu，social_friend,marital,work_status
-sns.heatmap(train[['happiness','age','inc_ability','gender','status_peer','family_status','health','equity','class','work_exper',
-                   'health_problem','income','house','depression','learn','relax','edu','social_friend','marital','work_status']].corr(),
+sns.heatmap(train[['happiness','age','inc_ability','gender','status_peer','family_status','equity','income','class','house','survey_type',
+                   'work_exper','health_problem','depression','learn','relax','edu','social_friend','health','marital','work_status']].corr(),
             annot=True,cmap='RdYlGn',linewidths=0.2) 
 fig=plt.gcf() # 获取当前的figure
 fig.set_size_inches(12,10) # 设置尺寸
@@ -890,7 +977,7 @@ plt.show()
 ```
 
 
-![png](output_23_0.png)
+![png](output_26_0.png)
 
 
 
