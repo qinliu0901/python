@@ -6,7 +6,7 @@ python学习历程
 目录
 -------------------
 
-学习内容如下：
+学习内容如下：致以 
 1. [游戏外星人入侵](/python/alien_invasion)
 2. [部分语法基础](/python/Basic_demo)
 3. [python爬虫基础及爬取百度图片](/python/python_spider)
